@@ -34,11 +34,11 @@ namespace convenient_adofai
             {
                 return; //모드가 실행될 때 로그에 NullPointerException이 뜨지 않도록 해줌
             }
-            ispause = scrController.instance.paused && scrConductor.instance.isGameWorld;
+            ispause = scrController.instance.paused && scrConductor.instance.isGameWorld && !scrController.instance.isEditingLevel;
             //레벨을 플레이 중이고 일시정지 상태가 아니면 true, 레벨을 플레이 하고 있지 않거나 일시정지 상태면 false
             if (ispause)
             {
-                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !restart && !scrController.instance.isEditingLevel && !UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E))
+                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !restart && !UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E))
                 {
                     restart = true;
                     PauseMenu menu = new PauseMenu();
@@ -48,9 +48,8 @@ namespace convenient_adofai
                     GCS.checkpointNum = 0;
                     //GCS.sceneToLoad = this.levelName;
                     scrUIController.instance.WipeToBlack(WipeDirection.StartsFromRight, null);
-                    restart = false;
                 }
-                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !editor && scrController.instance.isLevelEditor && !scrController.instance.isEditingLevel && !UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R))
+                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !editor && !restart && scrController.instance.isLevelEditor && !UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R))
                 {
                     editor = true;
                     PauseMenu menu = new PauseMenu();
@@ -63,8 +62,12 @@ namespace convenient_adofai
                         instance.UpdatePresence();
                     }
                     Persistence.UpdateLastOpenedLevel(CustomLevel.instance.levelPath);
-                    editor = false;
                 }
+            }
+            else if (!ispause)
+            {
+                editor = false;
+                restart = false;
             }
         }
 
