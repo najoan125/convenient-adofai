@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace convenient_adofai
@@ -35,10 +36,9 @@ namespace convenient_adofai
                 return; //모드가 실행될 때 로그에 NullPointerException이 뜨지 않도록 해줌
             }
             ispause = scrController.instance.paused && scrConductor.instance.isGameWorld && !scrController.instance.isEditingLevel;
-            //레벨을 플레이 중이고 일시정지 상태가 아니면 true, 레벨을 플레이 하고 있지 않거나 일시정지 상태면 false
             if (ispause)
             {
-                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !restart && !UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E))
+                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !restart && !editor && !UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E))
                 {
                     restart = true;
                     PauseMenu menu = new PauseMenu();
@@ -68,6 +68,15 @@ namespace convenient_adofai
             {
                 editor = false;
                 restart = false;
+            }
+
+            if (scrController.instance.paused && scrController.instance.isEditingLevel)
+            {
+                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C))
+                {
+                    GCS.sceneToLoad = "scnCLS";
+                    scrUIController.instance.WipeToBlack(WipeDirection.StartsFromRight, null);
+                }
             }
         }
 
