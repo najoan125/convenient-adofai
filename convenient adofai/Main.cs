@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using debug = UnityEngine.Debug;
 using UnityModManagerNet;
 
 namespace convenient_adofai
@@ -42,7 +43,7 @@ namespace convenient_adofai
                 {
                     restart = true;
                     PauseMenu menu = new PauseMenu();
-                    menu.PlaySfx(2);
+                    menu.PlaySfx(SfxSound.MenuSquelch);
                     scrController controller = new scrController();
                     controller.Restart();
                     GCS.checkpointNum = 0;
@@ -53,7 +54,7 @@ namespace convenient_adofai
                 {
                     editor = true;
                     PauseMenu menu = new PauseMenu();
-                    menu.PlaySfx(2);
+                    menu.PlaySfx(SfxSound.MenuSquelch);
                     scrController.instance.TogglePauseGame();
                     scnEditor.instance.SwitchToEditMode(true);
                     DiscordController instance = DiscordController.instance;
@@ -72,7 +73,7 @@ namespace convenient_adofai
 
             if (scrController.instance.paused && scrController.instance.isEditingLevel)
             {
-                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.C))
+                if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.C))
                 {
                     GCS.sceneToLoad = "scnCLS";
                     scrUIController.instance.WipeToBlack(WipeDirection.StartsFromRight, null);
