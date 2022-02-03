@@ -9,18 +9,24 @@ namespace convenient_adofai
 {
     public static class RestartPatch
     {
-        [HarmonyPatch(typeof(scrController), "Restart")]
-        public static class Restart_Patch
+        [HarmonyPatch(typeof(PauseMenu),"Update")]
+        public static class PauseMenuPatch
         {
-            public static bool Prefix()
+            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu)
             {
-                if (Main.restart)
+                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !Main.restart && !Main.editor && scrConductor.instance.isGameWorld && !___isOnSettingsMenu)
                 {
-                    return false;
+                    Main.restart = true;
+                    __instance.restartButton.Select();
                 }
-                else
+                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && scrController.instance.isLevelEditor && !___isOnSettingsMenu)
                 {
-                    return true;
+                    Main.editor = true;
+                    __instance.openInEditorButton.Select();
+                }
+                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S) && !Main.editor && !Main.restart)
+                {
+                    __instance.settingsButton.Select();
                 }
             }
         }
