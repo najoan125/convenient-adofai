@@ -17,9 +17,13 @@ namespace convenient_adofai
         public static Harmony harmony;
         public static bool IsEnabled = false;
         public static bool ispause = false;
-
+        public static bool isCLSClicked = false;
         public static bool restart = false;
         public static bool editor = false;
+
+        private static PropertyInfo isEditingLevelProperty =
+            AccessTools.Property(typeof(ADOBase), "isEditingLevel");
+        public static readonly int ReleaseNumber = (int)AccessTools.Field(typeof(GCNS), "releaseNumber").GetValue(null);
 
         public static void Setup(UnityModManager.ModEntry modEntry)
         {
@@ -34,20 +38,29 @@ namespace convenient_adofai
             {
                 return;
             }
-            ispause = scrController.instance.paused && scrConductor.instance.isGameWorld && !scrController.instance.isEditingLevel;
+
+            bool isEditingLevel = (bool)isEditingLevelProperty.GetValue(
+                Main.ReleaseNumber >= 94 ? null : scnEditor.instance);
+
+            ispause = scrController.instance.paused && scrConductor.instance.isGameWorld && !isEditingLevel;
             if (!ispause)
             {
                 editor = false;
                 restart = false;
             }
 
-            if (scrController.instance.paused && scrController.instance.isEditingLevel)
+            if (scrController.instance.paused && isEditingLevel)
             {
-                if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.C))
+                if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.C) && !isCLSClicked)
                 {
+                    isCLSClicked = true;
                     GCS.sceneToLoad = "scnCLS";
                     scrUIController.instance.WipeToBlack(WipeDirection.StartsFromRight, null);
                 }
+            }
+            if(scnCLS.instance)
+            {
+                isCLSClicked = false;
             }
         }
 

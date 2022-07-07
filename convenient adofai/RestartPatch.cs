@@ -19,7 +19,7 @@ namespace convenient_adofai
                     Main.restart = true;
                     __instance.restartButton.Select();
                 }
-                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && scrController.instance.isLevelEditor && !___isOnSettingsMenu)
+                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && scnEditor.instance.customLevel && !___isOnSettingsMenu)
                 {
                     Main.editor = true;
                     __instance.openInEditorButton.Select();
