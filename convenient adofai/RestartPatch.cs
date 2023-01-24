@@ -12,21 +12,28 @@ namespace convenient_adofai
         [HarmonyPatch(typeof(PauseMenu),"Update")]
         public static class PauseMenuPatch
         {
-            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu)
+            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, bool ___anyButtonPressed)
             {
                 if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !Main.restart && !Main.editor && scrConductor.instance.isGameWorld && !___isOnSettingsMenu)
                 {
                     Main.restart = true;
                     __instance.restartButton.Select();
+                    ___anyButtonPressed = true;
                 }
-                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && scnEditor.instance.customLevel && !___isOnSettingsMenu)
+                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
                 {
-                    Main.editor = true;
-                    __instance.openInEditorButton.Select();
+                    //커스텀 레벨이고, 연습모드가 아닐 때
+                    if (!GCS.practiceMode && GCS.standaloneLevelMode && !ADOBase.isOfficialLevel && !RDC.runningOnSteamDeck)
+                    {
+                        Main.editor = true;
+                        __instance.openInEditorButton.Select();
+                        ___anyButtonPressed = true;
+                    }
                 }
                 else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S) && !Main.editor && !Main.restart)
                 {
                     __instance.settingsButton.Select();
+                    ___anyButtonPressed = true;
                 }
             }
         }
