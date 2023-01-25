@@ -9,16 +9,19 @@ namespace convenient_adofai
 {
     public static class RestartPatch
     {
+        public static int buttonPressed = 0;
+
         [HarmonyPatch(typeof(PauseMenu),"Update")]
         public static class PauseMenuPatch
         {
-            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, bool ___anyButtonPressed)
+            public static bool Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, bool ___anyButtonPressed)
             {
                 if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !Main.restart && !Main.editor && scrConductor.instance.isGameWorld && !___isOnSettingsMenu)
                 {
                     Main.restart = true;
                     __instance.restartButton.Select();
-                    ___anyButtonPressed = true;
+                    buttonPressed = 1;
+                    return false;
                 }
                 else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
                 {
@@ -27,13 +30,38 @@ namespace convenient_adofai
                     {
                         Main.editor = true;
                         __instance.openInEditorButton.Select();
-                        ___anyButtonPressed = true;
+                        buttonPressed = 1;
+                        return false;
                     }
                 }
                 else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S) && !Main.editor && !Main.restart)
                 {
                     __instance.settingsButton.Select();
-                    ___anyButtonPressed = true;
+                    buttonPressed = 1;
+                    return false;
+                }
+
+                if (UnityEngine.Input.anyKeyDown)
+                {
+                    buttonPressed = -1;
+                }
+                else
+                {
+                    buttonPressed = 0;
+                }//R,E,S를 누르면 1 / 다른 키를 누르면 -1 / 아무 것도 누르지 않으면 0
+
+                return true;
+            }
+        }
+
+        [HarmonyPatch(typeof(RDInput), "GetMain")]
+        public static class MainPressPatch
+        {
+            public static void Postfix(ref int __result)
+            {
+                if (scrController.instance.paused && buttonPressed != -1)
+                {
+                    __result = 0;
                 }
             }
         }
