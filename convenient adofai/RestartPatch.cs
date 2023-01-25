@@ -14,14 +14,13 @@ namespace convenient_adofai
         [HarmonyPatch(typeof(PauseMenu),"Update")]
         public static class PauseMenuPatch
         {
-            public static bool Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, bool ___anyButtonPressed)
+            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, bool ___anyButtonPressed)
             {
                 if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !Main.restart && !Main.editor && scrConductor.instance.isGameWorld && !___isOnSettingsMenu)
                 {
                     Main.restart = true;
                     __instance.restartButton.Select();
                     buttonPressed = 1;
-                    return false;
                 }
                 else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
                 {
@@ -31,17 +30,15 @@ namespace convenient_adofai
                         Main.editor = true;
                         __instance.openInEditorButton.Select();
                         buttonPressed = 1;
-                        return false;
                     }
                 }
-                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S) && !Main.editor && !Main.restart)
+                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
                 {
                     __instance.settingsButton.Select();
                     buttonPressed = 1;
-                    return false;
                 }
 
-                if (UnityEngine.Input.anyKeyDown)
+                if (buttonPressed != 1 && UnityEngine.Input.anyKeyDown)
                 {
                     buttonPressed = -1;
                 }
@@ -49,8 +46,6 @@ namespace convenient_adofai
                 {
                     buttonPressed = 0;
                 }//R,E,S를 누르면 1 / 다른 키를 누르면 -1 / 아무 것도 누르지 않으면 0
-
-                return true;
             }
         }
 
