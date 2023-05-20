@@ -25,7 +25,7 @@ namespace convenient_adofai
                 else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
                 {
                     //커스텀 레벨이고, 연습모드가 아닐 때
-                    if (!GCS.practiceMode && GCS.standaloneLevelMode && !ADOBase.isOfficialLevel && !RDC.runningOnSteamDeck)
+                    if (!GCS.practiceMode && !ADOBase.isOfficialLevel && !RDC.runningOnSteamDeck)
                     {
                         Main.editor = true;
                         __instance.openInEditorButton.Select();
