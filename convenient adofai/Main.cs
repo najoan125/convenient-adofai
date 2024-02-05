@@ -1,12 +1,6 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using debug = UnityEngine.Debug;
 using UnityModManagerNet;
 
 namespace convenient_adofai
@@ -15,15 +9,14 @@ namespace convenient_adofai
     {
         public static UnityModManager.ModEntry.ModLogger Logger;
         public static Harmony harmony;
-        public static bool IsEnabled = false;
-        public static bool ispause = false;
-        public static bool isCLSClicked = false;
-        public static bool restart = false;
-        public static bool editor = false;
+        public static bool keyDown = false;
 
-        private static PropertyInfo isEditingLevelProperty =
+        private static bool ispause = false;
+        private static bool isCLSClicked = false;
+
+        private static readonly PropertyInfo isEditingLevelProperty =
             AccessTools.Property(typeof(ADOBase), "isEditingLevel");
-        public static readonly int ReleaseNumber = (int)AccessTools.Field(typeof(GCNS), "releaseNumber").GetValue(null);
+        private static readonly int ReleaseNumber = (int)AccessTools.Field(typeof(GCNS), "releaseNumber").GetValue(null);
 
         public static void Setup(UnityModManager.ModEntry modEntry)
         {
@@ -45,8 +38,7 @@ namespace convenient_adofai
             ispause = scrController.instance.paused && scrConductor.instance.isGameWorld && !isEditingLevel;
             if (!ispause)
             {
-                editor = false;
-                restart = false;
+                keyDown = false;
             }
 
             if (scrController.instance.paused && isEditingLevel)
@@ -66,8 +58,6 @@ namespace convenient_adofai
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
-            IsEnabled = value;
-
             if (value)
             {
                 harmony = new Harmony(modEntry.Info.Id);

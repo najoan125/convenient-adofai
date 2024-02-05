@@ -1,9 +1,6 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace convenient_adofai
 {
@@ -14,28 +11,49 @@ namespace convenient_adofai
         [HarmonyPatch(typeof(PauseMenu),"Update")]
         public static class PauseMenuPatch
         {
-            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, bool ___anyButtonPressed)
+            public static void Prefix(PauseMenu __instance, bool ___isOnSettingsMenu, List<GeneralPauseButton> ___currentButtons)
             {
-                if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && !Main.restart && !Main.editor && scrConductor.instance.isGameWorld && !___isOnSettingsMenu)
+                if (!Main.keyDown && !___isOnSettingsMenu)
                 {
-                    Main.restart = true;
-                    __instance.restartButton.Select();
-                    buttonPressed = 1;
-                }
-                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
-                {
-                    //커스텀 레벨이고, 연습모드가 아닐 때
-                    if (!GCS.practiceMode && !ADOBase.isOfficialLevel && !RDC.runningOnSteamDeck)
+                    if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.R) && (scrConductor.instance.isGameWorld || scnCLS.instance))
                     {
-                        Main.editor = true;
-                        __instance.openInEditorButton.Select();
+                        if (scrConductor.instance.isGameWorld)
+                            __instance.restartButton.Select();
+                        else
+                        {
+                            foreach (PauseButton button in ___currentButtons.Cast<PauseButton>())
+                            {
+                                if (button.buttonType == PauseMenu.ButtonType.Refresh)
+                                {
+                                    button.Select();
+                                    break;
+                                }
+                            }
+                        }
+                        buttonPressed = 1;
+                        Main.keyDown = true;
+                    }
+                    else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.W) && scnCLS.instance)
+                    {
+                        __instance.steamWorkshopButton.Select();
+                        buttonPressed = 1;
+                        Main.keyDown = true;
+                    }
+                    else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.E))
+                    {
+                        //커스텀 레벨이고, 연습모드가 아닐 때
+                        if (!GCS.practiceMode && !ADOBase.isOfficialLevel && !RDC.runningOnSteamDeck)
+                        {
+                            __instance.openInEditorButton.Select();
+                            buttonPressed = 1;
+                            Main.keyDown = true;
+                        }
+                    }
+                    else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S))
+                    {
+                        __instance.settingsButton.Select();
                         buttonPressed = 1;
                     }
-                }
-                else if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.S) && !Main.editor && !Main.restart && !___isOnSettingsMenu)
-                {
-                    __instance.settingsButton.Select();
-                    buttonPressed = 1;
                 }
 
                 if (buttonPressed != 1 && UnityEngine.Input.anyKeyDown)
